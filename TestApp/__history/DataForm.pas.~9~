@@ -1,0 +1,41 @@
+unit DataForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, frxClass, frxDBSet, ABSMain;
+
+type
+  TFormData = class(TForm)
+    ABSDatabase: TABSDatabase;
+    ABSTable: TABSTable;
+    ABSQuerySearch: TABSQuery;
+    ABSQuery: TABSQuery;
+    frxReport1: TfrxReport;
+    frxDBDataset1: TfrxDBDataset;
+    DataSource: TDataSource;
+    ABSQueryUpdate: TABSQuery;
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FormData: TFormData;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFormData.FormCreate(Sender: TObject);
+var
+  Pathexe : String;
+begin
+  PathExe := ExtractFilePath(Application.ExeName);
+  AbsDatabase.DatabaseFileName := PathExe+'\syngentadb.ABS'
+end;
+
+end.

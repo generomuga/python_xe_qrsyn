@@ -1,0 +1,353 @@
+object FormData: TFormData
+  Left = 0
+  Top = 0
+  Caption = 'FormData'
+  ClientHeight = 64
+  ClientWidth = 527
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object ABSDatabase: TABSDatabase
+    Connected = True
+    CurrentVersion = '7.50 '
+    DatabaseFileName = 
+      'E:\Projects\Debenu-DelphiZXingQRCode\TestApp\Win32\Debug\syngent' +
+      'adb.ABS'
+    DatabaseName = 'SyngentaDb'
+    Exclusive = False
+    Password = 'syadmin'
+    MaxConnections = 20
+    MultiUser = False
+    SessionName = 'Default'
+    Left = 24
+    Top = 15
+  end
+  object ABSTable: TABSTable
+    CurrentVersion = '7.50 '
+    DatabaseName = 'SyngentaDb'
+    InMemory = False
+    ReadOnly = False
+    AutoCalcFields = False
+    StoreDefs = True
+    FieldDefs = <
+      item
+        Name = 'ID'
+        DataType = ftInteger
+      end
+      item
+        Name = 'CRPCD'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'MATID'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'HIGHNAME'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'ABBRC'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'CGENES'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'ADMNC'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'POLID'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'LOTID'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'GENCD'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'FPTID'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'MCNBID'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'MVRMK'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'MLTST'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'MSTSL'
+        DataType = ftString
+        Size = 50
+      end
+      item
+        Name = 'LABELLED'
+        DataType = ftString
+        Size = 50
+      end>
+    TableName = 'tbl_input'
+    Exclusive = False
+    Left = 72
+    Top = 15
+  end
+  object ABSQuerySearch: TABSQuery
+    CurrentVersion = '7.50 '
+    DatabaseName = 'dbSyngenta'
+    InMemory = False
+    ReadOnly = False
+    DataSource = DataSource
+    Left = 200
+    Top = 15
+  end
+  object ABSQuery: TABSQuery
+    CurrentVersion = '7.50 '
+    DatabaseName = 'SyngentaDb'
+    InMemory = False
+    ReadOnly = True
+    DataSource = DataSource
+    RequestLive = True
+    Left = 264
+    Top = 15
+  end
+  object frxReport1: TfrxReport
+    Version = '5.5.8'
+    DotMatrixReport = False
+    IniFile = '\Software\Fast Reports'
+    PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
+    PreviewOptions.Zoom = 1.000000000000000000
+    PrintOptions.Printer = 'Default'
+    PrintOptions.PrintOnSheet = 0
+    ReportOptions.CreateDate = 42643.576932037000000000
+    ReportOptions.LastChange = 42646.639789687500000000
+    ScriptLanguage = 'PascalScript'
+    ScriptText.Strings = (
+      'begin'
+      ''
+      'end.')
+    Left = 320
+    Top = 15
+    Datasets = <
+      item
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+      end>
+    Variables = <>
+    Style = <>
+    object Data: TfrxDataPage
+      Height = 1000.000000000000000000
+      Width = 1000.000000000000000000
+    end
+    object Page1: TfrxReportPage
+      PaperWidth = 210.000000000000000000
+      PaperHeight = 297.000000000000000000
+      PaperSize = 9
+      LeftMargin = 1.000000000000000000
+      RightMargin = 1.000000000000000000
+      TopMargin = 1.000000000000000000
+      BottomMargin = 1.000000000000000000
+      DataSet = frxDBDataset1
+      DataSetName = 'frxDBDataset1'
+      object Barcode2D1: TfrxBarcode2DView
+        Left = 12.677180000000000000
+        Top = 94.606370000000000000
+        Width = 84.000000000000000000
+        Height = 84.000000000000000000
+        BarType = bcCodeQR
+        BarProperties.Encoding = qrAuto
+        BarProperties.QuietZone = 0
+        BarProperties.ErrorLevels = ecL
+        BarProperties.PixelSize = 4
+        BarProperties.CodePage = 0
+        DataField = 'lotid'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Rotation = 0
+        ShowText = False
+        Text = '12345678'
+        Zoom = 1.000000000000000000
+        FontScaled = True
+        QuietZone = 0
+      end
+      object Memo1: TfrxMemoView
+        Left = 99.606370000000000000
+        Top = 95.267780000000000000
+        Width = 173.858380000000000000
+        Height = 18.897650000000000000
+        DataField = 'matid'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -16
+        Font.Name = 'Arial'
+        Font.Style = []
+        Memo.UTF8W = (
+          '[frxDBDataset1."matid"]')
+        ParentFont = False
+      end
+      object Memo2: TfrxMemoView
+        Left = 9.511750000000000000
+        Top = 205.385900000000000000
+        Width = 173.858380000000000000
+        Height = 18.897650000000000000
+        DataField = 'admnc'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Memo.UTF8W = (
+          '[frxDBDataset1."admnc"]')
+      end
+      object Barcode2D3: TfrxBarcode2DView
+        Left = 278.346630000000000000
+        Top = 94.267780000000000000
+        Width = 84.000000000000000000
+        Height = 84.000000000000000000
+        BarType = bcCodeQR
+        BarProperties.Encoding = qrAuto
+        BarProperties.QuietZone = 0
+        BarProperties.ErrorLevels = ecL
+        BarProperties.PixelSize = 4
+        BarProperties.CodePage = 0
+        DataField = 'mcnbid'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Rotation = 0
+        ShowText = False
+        Text = '12345678'
+        Zoom = 1.000000000000000000
+        FontScaled = True
+        QuietZone = 0
+      end
+      object Memo3: TfrxMemoView
+        Left = 8.897650000000000000
+        Top = 181.858380000000000000
+        Width = 177.637910000000000000
+        Height = 18.897650000000000000
+        DataField = 'lotid'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Memo.UTF8W = (
+          '[frxDBDataset1."lotid"]')
+      end
+      object Memo4: TfrxMemoView
+        Left = 205.315090000000000000
+        Top = 181.417440000000000000
+        Width = 158.740260000000000000
+        Height = 18.897650000000000000
+        DataField = 'mcnbid'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Memo.UTF8W = (
+          '[frxDBDataset1."mcnbid"]')
+      end
+      object Memo5: TfrxMemoView
+        Left = 10.338590000000000000
+        Top = 223.771800000000000000
+        Width = 173.858380000000000000
+        Height = 18.897650000000000000
+        DataField = 'fptid'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Memo.UTF8W = (
+          '[frxDBDataset1."fptid"]')
+      end
+      object Memo6: TfrxMemoView
+        Left = 10.338590000000000000
+        Top = 240.889920000000000000
+        Width = 170.078850000000000000
+        Height = 18.897650000000000000
+        DataField = 'cgene'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Memo.UTF8W = (
+          '[frxDBDataset1."cgene"]')
+      end
+      object Memo7: TfrxMemoView
+        Left = 205.094620000000000000
+        Top = 203.653680000000000000
+        Width = 158.740260000000000000
+        Height = 18.897650000000000000
+        DataField = 'crpcd'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Memo.UTF8W = (
+          '[frxDBDataset1."crpcd"]')
+      end
+      object Memo8: TfrxMemoView
+        Left = 205.094620000000000000
+        Top = 223.992270000000000000
+        Width = 158.740260000000000000
+        Height = 18.897650000000000000
+        DataField = 'mvrmk'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Memo.UTF8W = (
+          '[frxDBDataset1."mvrmk"]')
+      end
+      object Memo9: TfrxMemoView
+        Left = 207.315090000000000000
+        Top = 241.889920000000000000
+        Width = 162.519790000000000000
+        Height = 18.897650000000000000
+        DataField = 'gencd'
+        DataSet = frxDBDataset1
+        DataSetName = 'frxDBDataset1'
+        Memo.UTF8W = (
+          '[frxDBDataset1."gencd"]')
+      end
+    end
+  end
+  object frxDBDataset1: TfrxDBDataset
+    UserName = 'frxDBDataset1'
+    CloseDataSource = False
+    DataSet = ABSQuerySearch
+    BCDToCurrency = False
+    Left = 376
+    Top = 15
+  end
+  object DataSource: TDataSource
+    DataSet = ABSTable
+    Left = 144
+    Top = 15
+  end
+  object ABSQueryUpdate: TABSQuery
+    CurrentVersion = '7.50 '
+    DatabaseName = 'SyngentaDb'
+    InMemory = False
+    ReadOnly = False
+    DataSource = DataSource
+    Left = 456
+    Top = 16
+  end
+end

@@ -1,0 +1,269 @@
+unit PacketPrint;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,ShellApi, Vcl.Menus,
+  Vcl.ComCtrls;
+
+type
+  TFormPacket = class(TForm)
+    MainMenu1: TMainMenu;
+    File1: TMenuItem;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    GroupBox4: TGroupBox;
+    Label9: TLabel;
+    LabelPath: TLabel;
+    ButtonImportMcnbid: TButton;
+    CheckInclude: TCheckBox;
+    Memo1: TMemo;
+    Button1: TButton;
+    Label2: TLabel;
+    OpenDialog1: TOpenDialog;
+    Button2: TButton;
+    EditFilename: TEdit;
+    Label1: TLabel;
+    CheckBoxRB: TCheckBox;
+    procedure Button1Click(Sender: TObject);
+    procedure ButtonImportMcnbidClick(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    function GetDosOutputPP(CommandLine: string; Work: string = ''): string;
+    function GetDosOutputRB(CommandLine: string; Work: string = ''): string;
+    procedure SaveSetPrint(switch:String);
+    procedure Print;
+  end;
+
+  MainThread = Class(TThread)
+    protected
+      procedure Execute;override;
+  End;
+
+  SimThread = Class(TThread)
+    protected
+      procedure Execute;override;
+  End;
+
+var
+  FormPacket: TFormPacket;
+  pathexe,inputfile : String;
+implementation
+
+{$R *.dfm}
+
+procedure TFormPacket.Print;
+var
+  switch : String;
+begin
+
+  pathexe := ExtractFilePath(Application.ExeName);
+  if CheckInclude.Checked = True then
+     switch := '1'
+  else
+     switch := '0';
+
+  SaveSetPrint(switch);
+  Memo1.Lines.Add('Creating pdf file...');
+  Memo1.Lines.Add(GetDosOutputPP(''));
+
+  //if CheckBoxRB.Checked = True then
+  //    Memo1.Lines.Text := GetDosOutputRB('');
+
+  Memo1.Lines.Add('Packet Print - DONE!');
+end;
+
+procedure TFormPacket.SaveSetPrint(switch:string);
+var
+  filename : String;
+  ListSet : TStringList;
+begin
+  filename := pathexe+'setprint.txt';
+
+  if inputfile <> '' then
+     begin
+        ListSet := TStringList.Create;
+        ListSet.Add(inputfile+','+switch+','+EditFilename.Text+'.pdf'+','+EditFilename.Text+'_RB.pdf');
+        ListSet.SaveToFile(filename);
+     end;
+end;
+
+procedure MainThread.Execute;
+begin
+   if FormPacket.OpenDialog1.FileName <> '' then
+      FormPacket.Print
+   else
+      FormPacket.Memo1.Lines.Add('Please import your input file!');
+end;
+
+procedure SimThread.Execute;
+begin
+
+ if FormPacket.CheckBoxRB.Checked = True then
+    begin
+      FormPacket.Memo1.Lines.Add(FormPacket.GetDosOutputRB(''));
+      FormPacket.Memo1.Lines.Add('Row Band - DONE!');
+    end;
+end;
+
+procedure TFormPacket.Button1Click(Sender: TObject);
+begin
+
+    Memo1.Lines.Clear;
+
+    with MainThread.Create do
+         FreeOnTerminate := True;
+
+    with SimThread.Create do
+         FreeOnTerminate := True;
+
+end;
+
+procedure TFormPacket.Button2Click(Sender: TObject);
+var
+  path,pathoutput : String;
+begin
+
+  pathexe := ExtractFilePath(Application.ExeName);
+  pathoutput := pathexe+'Output\';
+
+  path := 'select,'+pathoutput;
+  ShellExecute(0, nil, 'explorer.exe', PChar(pathoutput), nil,
+  SW_SHOWNORMAL)
+
+end;
+
+procedure TFormPacket.ButtonImportMcnbidClick(Sender: TObject);
+begin
+  if OpenDialog1.Execute then
+    begin
+      inputfile := OpenDialog1.FileName;
+      LabelPath.Caption := inputfile;
+    end;
+end;
+
+function TFormPacket.GetDosOutputPP(CommandLine: string; Work: string = ''): string;
+var
+  SA: TSecurityAttributes;
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  StdOutPipeRead, StdOutPipeWrite: THandle;
+  WasOK: Boolean;
+  Buffer: array[0..255] of AnsiChar;
+  BytesRead: Cardinal;
+  WorkDir: string;
+  Handle: Boolean;
+begin
+
+  Result := '';
+  with SA do
+       begin
+         nLength := SizeOf(SA);
+         bInheritHandle := True;
+         lpSecurityDescriptor := nil;
+       end;
+  CreatePipe(StdOutPipeRead, StdOutPipeWrite, @SA, 0);
+  try
+    with SI do
+         begin
+           FillChar(SI, SizeOf(SI), 0);
+           cb := SizeOf(SI);
+           dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+           wShowWindow := SW_HIDE;
+           hStdInput := GetStdHandle(STD_INPUT_HANDLE);
+           hStdOutput := StdOutPipeWrite;
+           hStdError := StdOutPipeWrite;
+         end;
+    WorkDir := ExtractFilePath(Application.ExeName);
+    Handle := CreateProcess(nil, PChar(Pathexe+'dist\qrcode.exe' + CommandLine), nil, nil, True, 0, nil, PChar(WorkDir), SI, PI);
+    CloseHandle(StdOutPipeWrite);
+    if Handle then
+       try
+         repeat
+           WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+           if BytesRead > 0 then
+              begin
+                Buffer[BytesRead] := #0;
+                Result := Result + Buffer;
+              end;
+
+         until not WasOK or (BytesRead = 0);
+           WaitForSingleObject(PI.hProcess, INFINITE);
+       finally
+         CloseHandle(PI.hThread);
+         CloseHandle(PI.hProcess);
+       end;
+
+  finally
+    CloseHandle(StdOutPipeRead);
+  end;
+
+end;
+
+
+function TFormPacket.GetDosOutputRB(CommandLine: string; Work: string = ''): string;
+var
+  SA: TSecurityAttributes;
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  StdOutPipeRead, StdOutPipeWrite: THandle;
+  WasOK: Boolean;
+  Buffer: array[0..255] of AnsiChar;
+  BytesRead: Cardinal;
+  WorkDir: string;
+  Handle: Boolean;
+begin
+
+  Result := '';
+  with SA do
+       begin
+         nLength := SizeOf(SA);
+         bInheritHandle := True;
+         lpSecurityDescriptor := nil;
+       end;
+  CreatePipe(StdOutPipeRead, StdOutPipeWrite, @SA, 0);
+  try
+    with SI do
+         begin
+           FillChar(SI, SizeOf(SI), 0);
+           cb := SizeOf(SI);
+           dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+           wShowWindow := SW_HIDE;
+           hStdInput := GetStdHandle(STD_INPUT_HANDLE);
+           hStdOutput := StdOutPipeWrite;
+           hStdError := StdOutPipeWrite;
+         end;
+    WorkDir := ExtractFilePath(Application.ExeName);
+    Handle := CreateProcess(nil, PChar(Pathexe+'dist\qrrow.exe' + CommandLine), nil, nil, True, 0, nil, PChar(WorkDir), SI, PI);
+    CloseHandle(StdOutPipeWrite);
+    if Handle then
+       try
+         repeat
+           WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+           if BytesRead > 0 then
+              begin
+                Buffer[BytesRead] := #0;
+                Result := Result + Buffer;
+              end;
+
+         until not WasOK or (BytesRead = 0);
+           WaitForSingleObject(PI.hProcess, INFINITE);
+       finally
+         CloseHandle(PI.hThread);
+         CloseHandle(PI.hProcess);
+       end;
+
+  finally
+    CloseHandle(StdOutPipeRead);
+  end;
+
+end;
+
+
+
+end.
+

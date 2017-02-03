@@ -1,0 +1,35 @@
+unit Main;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus;
+
+type
+  TForm2 = class(TForm)
+    MainMenu1: TMainMenu;
+    ools1: TMenuItem;
+    QRSyngenta1: TMenuItem;
+    BucketPrint1: TMenuItem;
+    procedure QRSyngenta1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form2: TForm2;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm2.QRSyngenta1Click(Sender: TObject);
+begin
+  FormQRSyngenta := TFormQRSyngenta.Create(Application);
+  FormAbout.Show;
+end;
+
+end.

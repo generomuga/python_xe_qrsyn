@@ -1,0 +1,112 @@
+unit BucketPrint;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,ShellApi, Vcl.Menus;
+
+type
+  TFormBucket = class(TForm)
+    Button1: TButton;
+    MainMenu1: TMainMenu;
+    File1: TMenuItem;
+    GroupBox4: TGroupBox;
+    Label5: TLabel;
+    Label9: TLabel;
+    ButtonImportMcnbid: TButton;
+    CheckBox1: TCheckBox;
+    Memo1: TMemo;
+    procedure Button1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    function GetDosOutput(CommandLine: string; Work: string = ''): string;
+  end;
+
+var
+  FormBucket: TFormBucket;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFormBucket.Button1Click(Sender: TObject);
+var
+  filename,pathexe : String;
+begin
+  pathexe := ExtractFilePath(Application.ExeName);
+  filename := pathexe+'dist\qrcode.exe';
+  //ShellExecute(handle,'open',PChar(filename), '','',SW_SHOWNORMAL);
+  Memo1.Lines.Text := GetDosOutput('');
+end;
+
+function TFormBucket.GetDosOutput(CommandLine: string; Work: string = ''): string;
+var
+  SA: TSecurityAttributes;
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  StdOutPipeRead, StdOutPipeWrite: THandle;
+  WasOK: Boolean;
+  Buffer: array[0..255] of AnsiChar;
+  BytesRead: Cardinal;
+  WorkDir: string;
+  Handle: Boolean;
+begin
+
+  Result := '';
+  with SA do
+       begin
+         nLength := SizeOf(SA);
+         bInheritHandle := True;
+         lpSecurityDescriptor := nil;
+       end;
+  CreatePipe(StdOutPipeRead, StdOutPipeWrite, @SA, 0);
+  try
+    //FormNewSimulation.MemoStatus.Clear;
+    //FormNewSimulation.MemoStatus.Lines.Add('Running simulation batch '+inttostr(num)+' out of '+inttostr(Round(notres))+'...');
+    with SI do
+         begin
+           FillChar(SI, SizeOf(SI), 0);
+           cb := SizeOf(SI);
+           dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+           wShowWindow := SW_HIDE;
+           hStdInput := GetStdHandle(STD_INPUT_HANDLE); // don't redirect stdin
+           hStdOutput := StdOutPipeWrite;
+           hStdError := StdOutPipeWrite;
+         end;
+    WorkDir := ExtractFilePath(Application.ExeName);
+    Handle := CreateProcess(nil, PChar('C:\Documents and Settings\GRomuga\Desktop\dist\qrcode.exe' + CommandLine), nil, nil, True, 0, nil, PChar(WorkDir), SI, PI);
+    CloseHandle(StdOutPipeWrite);
+    if Handle then
+       try
+         repeat
+           WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+           if BytesRead > 0 then
+              begin
+                Buffer[BytesRead] := #0;
+                Result := Result + Buffer;
+              end;
+
+         until not WasOK or (BytesRead = 0);
+           WaitForSingleObject(PI.hProcess, INFINITE);
+       finally
+         CloseHandle(PI.hThread);
+         CloseHandle(PI.hProcess);
+       end;
+
+       //FormNewSimulation.ProgressBarStatus.Update;
+
+  finally
+    CloseHandle(StdOutPipeRead);
+  end;
+
+
+  //FormNewSimulation.MemoStatus.Lines.Add('Simulation done...'#13#10);
+end;
+
+
+
+end.
+

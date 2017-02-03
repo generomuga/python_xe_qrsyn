@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2016-10-04 08:25:12.000.868,=E:\Projects\Debenu-DelphiZXingQRCode\TestApp\Unit2.pas</Transaction>
+    <Transaction>2016-10-04 08:25:24.000.246,E:\Projects\Debenu-DelphiZXingQRCode\TestApp\DataForm.pas=E:\Projects\Debenu-DelphiZXingQRCode\TestApp\Unit2.pas</Transaction>
+    <Transaction>2016-10-04 08:25:24.000.246,E:\Projects\Debenu-DelphiZXingQRCode\TestApp\DataForm.dfm=E:\Projects\Debenu-DelphiZXingQRCode\TestApp\Unit2.dfm</Transaction>
+    <Transaction>2016-12-02 14:10:08.000.114,=E:\Projects\QRSyngenta\TestApp\Unit2.pas</Transaction>
+    <Transaction>2016-12-02 16:19:36.000.560,E:\Projects\QRSyngenta\TestApp\Main.pas=E:\Projects\QRSyngenta\TestApp\Unit2.pas</Transaction>
+    <Transaction>2016-12-02 16:19:36.000.560,E:\Projects\QRSyngenta\TestApp\Main.dfm=E:\Projects\QRSyngenta\TestApp\Unit2.dfm</Transaction>
+    <Transaction>2016-12-03 16:25:41.000.467,=E:\Projects\QRSyngenta\TestApp\Unit1.pas</Transaction>
+    <Transaction>2016-12-03 16:25:49.000.888,E:\Projects\QRSyngenta\TestApp\BucketPrint.dfm=E:\Projects\QRSyngenta\TestApp\Unit1.dfm</Transaction>
+    <Transaction>2016-12-03 16:25:49.000.888,E:\Projects\QRSyngenta\TestApp\BucketPrint.pas=E:\Projects\QRSyngenta\TestApp\Unit1.pas</Transaction>
+    <Transaction>2016-12-04 08:40:26.000.027,E:\Projects\QRSyngenta\TestApp\BucketPrint.dfm=E:\Projects\QRSyngenta\TestApp\PacketPrint.dfm</Transaction>
+    <Transaction>2016-12-04 08:40:26.000.027,E:\Projects\QRSyngenta\TestApp\BucketPrint.pas=E:\Projects\QRSyngenta\TestApp\PacketPrint.pas</Transaction>
+  </Transactions>
+</BorlandProject>

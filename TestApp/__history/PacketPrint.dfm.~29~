@@ -1,0 +1,144 @@
+object FormPacket: TFormPacket
+  Left = 0
+  Top = 0
+  Caption = 'Packet Print'
+  ClientHeight = 298
+  ClientWidth = 403
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  Menu = MainMenu1
+  OldCreateOrder = False
+  Position = poScreenCenter
+  DesignSize = (
+    403
+    298)
+  PixelsPerInch = 96
+  TextHeight = 13
+  object PageControl1: TPageControl
+    Left = 8
+    Top = 8
+    Width = 385
+    Height = 284
+    ActivePage = TabSheet1
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    TabOrder = 0
+    ExplicitHeight = 249
+    object TabSheet1: TTabSheet
+      Caption = 'Main'
+      ExplicitHeight = 221
+      DesignSize = (
+        377
+        256)
+      object GroupBox4: TGroupBox
+        Left = 9
+        Top = 3
+        Width = 352
+        Height = 241
+        Anchors = [akLeft, akTop, akRight, akBottom]
+        Caption = 'Input'
+        TabOrder = 0
+        ExplicitHeight = 206
+        DesignSize = (
+          352
+          241)
+        object Label9: TLabel
+          Left = 25
+          Top = 62
+          Width = 30
+          Height = 13
+          Caption = 'Action'
+        end
+        object LabelPath: TLabel
+          Left = 96
+          Top = 34
+          Width = 9
+          Height = 13
+          Caption = '   '
+        end
+        object Label2: TLabel
+          Left = 17
+          Top = 118
+          Width = 31
+          Height = 13
+          Caption = 'Status'
+        end
+        object Label1: TLabel
+          Left = 25
+          Top = 93
+          Width = 77
+          Height = 13
+          Caption = 'Output filename'
+        end
+        object ButtonImportMcnbid: TButton
+          Left = 17
+          Top = 27
+          Width = 73
+          Height = 25
+          Caption = 'Import'
+          TabOrder = 0
+          OnClick = ButtonImportMcnbidClick
+        end
+        object CheckInclude: TCheckBox
+          Left = 64
+          Top = 61
+          Width = 98
+          Height = 17
+          Caption = 'Include ABBRC1'
+          Checked = True
+          State = cbChecked
+          TabOrder = 1
+        end
+        object Memo1: TMemo
+          Left = 17
+          Top = 137
+          Width = 312
+          Height = 43
+          Anchors = [akLeft, akTop, akRight]
+          ScrollBars = ssVertical
+          TabOrder = 2
+        end
+        object Button1: TButton
+          Left = 29
+          Top = 186
+          Width = 140
+          Height = 37
+          Caption = 'Print'
+          TabOrder = 3
+          OnClick = Button1Click
+        end
+        object Button2: TButton
+          Left = 175
+          Top = 186
+          Width = 138
+          Height = 37
+          Caption = 'View Folder (Output)'
+          TabOrder = 4
+          OnClick = Button2Click
+        end
+        object Edit1: TEdit
+          Left = 107
+          Top = 91
+          Width = 222
+          Height = 21
+          TabOrder = 5
+          Text = 'Syngenta_Packet_Print'
+        end
+      end
+    end
+  end
+  object MainMenu1: TMainMenu
+    Left = 168
+    Top = 352
+    object File1: TMenuItem
+      Caption = 'File'
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    Left = 233
+    Top = 231
+  end
+end

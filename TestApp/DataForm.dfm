@@ -17,9 +17,6 @@ object FormData: TFormData
   TextHeight = 13
   object ABSDatabase: TABSDatabase
     CurrentVersion = '7.50 '
-    DatabaseFileName = 
-      'E:\Projects\Debenu-DelphiZXingQRCode\TestApp\Win32\Debug\syngent' +
-      'adb.ABS'
     DatabaseName = 'SyngentaDb'
     Exclusive = False
     Password = 'syadmin'
@@ -72,11 +69,6 @@ object FormData: TFormData
         Size = 50
       end
       item
-        Name = 'POLID'
-        DataType = ftString
-        Size = 50
-      end
-      item
         Name = 'LOTID'
         DataType = ftString
         Size = 50
@@ -92,14 +84,14 @@ object FormData: TFormData
         Size = 50
       end
       item
-        Name = 'MCNBID'
+        Name = 'UUID'
         DataType = ftString
-        Size = 50
+        Size = 20
       end
       item
-        Name = 'MVRMK'
+        Name = 'ALTID'
         DataType = ftString
-        Size = 50
+        Size = 20
       end
       item
         Name = 'MLTST'
@@ -107,7 +99,12 @@ object FormData: TFormData
         Size = 50
       end
       item
-        Name = 'MSTSL'
+        Name = 'TREATMENT'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'DISCLAIMER'
         DataType = ftString
         Size = 50
       end
@@ -126,7 +123,6 @@ object FormData: TFormData
     DatabaseName = 'dbSyngenta'
     InMemory = False
     ReadOnly = False
-    DataSource = DataSource
     Left = 200
     Top = 15
   end
@@ -150,7 +146,6 @@ object FormData: TFormData
     DatabaseName = 'SyngentaDb'
     InMemory = False
     ReadOnly = False
-    DataSource = DataSource
     Left = 456
     Top = 16
   end

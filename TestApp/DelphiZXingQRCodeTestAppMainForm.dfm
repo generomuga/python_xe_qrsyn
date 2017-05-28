@@ -1,7 +1,7 @@
 object FormQRSyngenta: TFormQRSyngenta
   Left = 0
   Top = 0
-  Caption = 'QRSyngenta v.101416'
+  Caption = 'QRSyngenta'
   ClientHeight = 664
   ClientWidth = 1219
   Color = clBtnFace
@@ -89,13 +89,13 @@ object FormQRSyngenta: TFormQRSyngenta
     ExplicitTop = 585
   end
   object Label10: TLabel
-    Left = 411
-    Top = 438
+    Left = 407
+    Top = 587
     Width = 43
     Height = 13
     Anchors = [akLeft, akBottom]
     Caption = 'Encoding'
-    ExplicitTop = 439
+    Visible = False
   end
   object edtText: TEdit
     Left = 1000
@@ -212,12 +212,6 @@ object FormQRSyngenta: TFormQRSyngenta
           end
           item
             Expanded = False
-            FieldName = 'POLID'
-            Width = 81
-            Visible = True
-          end
-          item
-            Expanded = False
             FieldName = 'LOTID'
             Width = 100
             Visible = True
@@ -236,13 +230,13 @@ object FormQRSyngenta: TFormQRSyngenta
           end
           item
             Expanded = False
-            FieldName = 'MCNBID'
+            FieldName = 'UUID'
             Width = 103
             Visible = True
           end
           item
             Expanded = False
-            FieldName = 'MVRMK'
+            FieldName = 'ALTID'
             Width = 77
             Visible = True
           end
@@ -254,8 +248,13 @@ object FormQRSyngenta: TFormQRSyngenta
           end
           item
             Expanded = False
-            FieldName = 'MSTSL'
+            FieldName = 'TREATMENT'
             Width = 91
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'DISCLAIMER'
             Visible = True
           end
           item
@@ -355,6 +354,7 @@ object FormQRSyngenta: TFormQRSyngenta
           Height = 17
           Caption = 'POLID'
           TabOrder = 8
+          Visible = False
         end
         object CheckBoxAll: TCheckBox
           Left = 717
@@ -417,12 +417,12 @@ object FormQRSyngenta: TFormQRSyngenta
       Height = 65
       OnPaint = PaintBox1Paint
     end
-    object LabelMCNBID: TLabel
-      Left = 257
-      Top = 85
-      Width = 77
+    object LabelAltid: TLabel
+      Left = 180
+      Top = 57
+      Width = 59
       Height = 20
-      Caption = 'LabelMcnbid'
+      Caption = 'LabelAltid'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -431,12 +431,12 @@ object FormQRSyngenta: TFormQRSyngenta
       ParentFont = False
       StyleElements = []
     end
-    object LabelMVRMK: TLabel
-      Left = 276
-      Top = 137
-      Width = 73
+    object LabelDisclaimer: TLabel
+      Left = 134
+      Top = 150
+      Width = 62
       Height = 20
-      Caption = 'LabelMvrmk'
+      Caption = 'Disclaimer'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -447,7 +447,7 @@ object FormQRSyngenta: TFormQRSyngenta
     end
     object LabelFPTID: TLabel
       Left = 22
-      Top = 143
+      Top = 124
       Width = 63
       Height = 20
       Caption = 'LabelFptid'
@@ -460,8 +460,8 @@ object FormQRSyngenta: TFormQRSyngenta
       StyleElements = []
     end
     object LabelADMNC: TLabel
-      Left = 22
-      Top = 100
+      Left = 21
+      Top = 142
       Width = 96
       Height = 23
       Caption = 'LabelAdmnc'
@@ -489,8 +489,8 @@ object FormQRSyngenta: TFormQRSyngenta
       OnContextPopup = LabelLOTIDContextPopup
     end
     object LabelGENCD: TLabel
-      Left = 276
-      Top = 157
+      Left = 147
+      Top = 124
       Width = 73
       Height = 20
       Caption = 'LabelGencd'
@@ -503,8 +503,8 @@ object FormQRSyngenta: TFormQRSyngenta
       StyleElements = []
     end
     object LabelCGENE: TLabel
-      Left = 22
-      Top = 161
+      Left = 165
+      Top = 80
       Width = 80
       Height = 20
       Caption = 'LabelCgenes'
@@ -524,8 +524,8 @@ object FormQRSyngenta: TFormQRSyngenta
       OnPaint = PaintBox2Paint
     end
     object LabelCrpcd: TLabel
-      Left = 276
-      Top = 117
+      Left = 230
+      Top = 14
       Width = 69
       Height = 20
       Caption = 'LabelCrpcd'
@@ -540,7 +540,7 @@ object FormQRSyngenta: TFormQRSyngenta
     end
     object LabelHighname: TLabel
       Left = 22
-      Top = 124
+      Top = 103
       Width = 93
       Height = 20
       Caption = 'LabelHighname'
@@ -553,8 +553,8 @@ object FormQRSyngenta: TFormQRSyngenta
       StyleElements = []
     end
     object LabelMatid2: TLabel
-      Left = 22
-      Top = 82
+      Left = 82
+      Top = 80
       Width = 72
       Height = 20
       Caption = 'LabelMatid2'
@@ -568,8 +568,8 @@ object FormQRSyngenta: TFormQRSyngenta
       OnContextPopup = LabelLOTIDContextPopup
     end
     object LabelAbbrc: TLabel
-      Left = 23
-      Top = 124
+      Left = 22
+      Top = 103
       Width = 69
       Height = 20
       Caption = 'LabelAbbrc'
@@ -581,10 +581,32 @@ object FormQRSyngenta: TFormQRSyngenta
       ParentFont = False
       StyleElements = []
     end
+    object LabelTreatment: TLabel
+      Left = 21
+      Top = 164
+      Width = 91
+      Height = 20
+      Caption = 'LabelTreatment'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Arial Narrow'
+      Font.Style = []
+      ParentFont = False
+      StyleElements = []
+    end
+    object LabelUUID: TLabel
+      Left = 236
+      Top = 40
+      Width = 50
+      Height = 13
+      Caption = 'LabelUUID'
+      Visible = False
+    end
   end
   object cmbEncoding: TComboBox
-    Left = 407
-    Top = 458
+    Left = 403
+    Top = 607
     Width = 145
     Height = 21
     Style = csDropDownList
@@ -592,6 +614,7 @@ object FormQRSyngenta: TFormQRSyngenta
     ItemIndex = 3
     TabOrder = 6
     Text = 'ISO-8859-1'
+    Visible = False
     OnChange = cmbEncodingChange
     Items.Strings = (
       'Auto'
@@ -602,8 +625,8 @@ object FormQRSyngenta: TFormQRSyngenta
       'UTF-8 with BOM')
   end
   object GroupBox2: TGroupBox
-    Left = 406
-    Top = 485
+    Left = 407
+    Top = 441
     Width = 146
     Height = 68
     Anchors = [akLeft, akBottom]
@@ -629,8 +652,8 @@ object FormQRSyngenta: TFormQRSyngenta
     end
   end
   object GroupBox3: TGroupBox
-    Left = 407
-    Top = 557
+    Left = 408
+    Top = 513
     Width = 146
     Height = 68
     Anchors = [akLeft, akBottom]
@@ -669,9 +692,9 @@ object FormQRSyngenta: TFormQRSyngenta
     object Label5: TLabel
       Left = 17
       Top = 49
-      Width = 131
+      Width = 170
       Height = 13
-      Caption = 'Source of MCNBID for dups'
+      Caption = 'Source of ALTID and UUID for dups'
     end
     object Label9: TLabel
       Left = 16
@@ -680,13 +703,13 @@ object FormQRSyngenta: TFormQRSyngenta
       Height = 13
       Caption = 'Action'
     end
-    object LabelMcnbidSource: TLabel
-      Left = 158
+    object LabelAUSource: TLabel
+      Left = 222
       Top = 49
-      Width = 91
+      Width = 72
       Height = 13
       Anchors = [akLeft, akRight, akBottom]
-      Caption = 'LabelMcnbidSource'
+      Caption = 'LabelAUSource'
     end
     object Label11: TLabel
       Left = 194
@@ -838,7 +861,7 @@ object FormQRSyngenta: TFormQRSyngenta
     Left = 1080
     Top = 552
   end
-  object OpenDialogMcnbid: TOpenDialog
+  object OpenDialogAU: TOpenDialog
     Filter = '*.*'
     Left = 1048
     Top = 480

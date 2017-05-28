@@ -1,8 +1,8 @@
 object FormMain: TFormMain
   Left = 0
   Top = 0
-  Caption = 'Syngenta'
-  ClientHeight = 2
+  Caption = 'Syngenta Tool v.2017528'
+  ClientHeight = 1
   ClientWidth = 667
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET

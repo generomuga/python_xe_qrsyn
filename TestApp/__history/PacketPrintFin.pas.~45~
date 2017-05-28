@@ -1,0 +1,225 @@
+unit PacketPrintFin;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, ShellApi;
+
+type
+  TFormPacketPrintFin = class(TForm)
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    Button1: TButton;
+    LabelDir: TLabel;
+    CheckBoxAbbrc: TCheckBox;
+    Label2: TLabel;
+    Memo1: TMemo;
+    CheckBoxRowBand: TCheckBox;
+    OpenDialog1: TOpenDialog;
+    Button2: TButton;
+    Edit1: TEdit;
+    Button3: TButton;
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    function GetDosOutput(CommandLine: string; Work: string = ''): string;
+    function GetDosOutputRow(CommandLine: string; Work: string = ''): string;
+    procedure Button3Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+   MainThread = Class(TThread)
+    protected
+      procedure Execute;override;
+  End;
+
+var
+  FormPacketPrintFin: TFormPacketPrintFin;
+  dirImport,pathexe : String;
+
+implementation
+
+{$R *.dfm}
+
+
+procedure MainThread.Execute;
+begin
+   FormPacketPrintFin.Memo1.Clear;
+   FormPacketPrintFin.Memo1.Lines.Add('Printing...');
+   FormPacketPrintFin.Memo1.Lines.add(FormPacketPrintFin.GetDosOutput(''));
+   if FormPacketPrintFin.CheckBoxRowBand.Checked = True then
+      FormPacketPrintFin.Memo1.Lines.Add(FormPacketPrintFin.GetDosOutputRow(''));
+
+   FormPacketPrintFin.Memo1.Lines.Add('Done!');
+end;
+
+procedure TFormPacketPrintFin.Button1Click(Sender: TObject);
+begin
+  if OpenDialog1.Execute then
+     begin
+       dirImport := OpenDialog1.FileName;
+       LabelDir.Caption := dirImport;
+     end;
+end;
+
+procedure TFormPacketPrintFin.Button2Click(Sender: TObject);
+var
+  ListSet : TStringList;
+begin
+  ListSet := TStringList.Create;
+
+  if dirImport <> '' then
+    begin
+        if CheckBoxAbbrc.Checked = True then
+           ListSet.Add(dirImport+','+'1'+','+Edit1.Text+',')
+        else
+           ListSet.Add(dirImport+','+'0'+','+Edit1.Text+','+);
+
+        ListSet.SaveToFile(pathexe+'setprint.txt');
+        with MainThread.Create do
+             FreeOnTerminate := True;
+
+
+    end
+  else
+    Memo1.Text := 'Please import the input file!';
+end;
+
+procedure TFormPacketPrintFin.Button3Click(Sender: TObject);
+var
+  path : String;
+begin
+        pathexe := ExtractFilePath(Application.ExeName);
+        path := 'select,'+pathexe+'Output';
+        ShellExecute(0, nil, 'explorer.exe', PChar(path), nil,
+        SW_SHOWNORMAL);
+end;
+
+procedure TFormPacketPrintFin.FormCreate(Sender: TObject);
+begin
+  pathexe := ExtractFilePath(Application.ExeName);
+end;
+
+function TFormPacketPrintFin.GetDosOutput(CommandLine: string; Work: string = ''): string;
+var
+  SA: TSecurityAttributes;
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  StdOutPipeRead, StdOutPipeWrite: THandle;
+  WasOK: Boolean;
+  Buffer: array[0..255] of AnsiChar;
+  BytesRead: Cardinal;
+  WorkDir: string;
+  Handle: Boolean;
+begin
+
+  Result := '';
+  with SA do
+       begin
+         nLength := SizeOf(SA);
+         bInheritHandle := True;
+         lpSecurityDescriptor := nil;
+       end;
+  CreatePipe(StdOutPipeRead, StdOutPipeWrite, @SA, 0);
+  try
+    with SI do
+         begin
+           FillChar(SI, SizeOf(SI), 0);
+           cb := SizeOf(SI);
+           dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+           wShowWindow := SW_HIDE;
+           hStdInput := GetStdHandle(STD_INPUT_HANDLE);
+           hStdOutput := StdOutPipeWrite;
+           hStdError := StdOutPipeWrite;
+         end;
+    WorkDir := ExtractFilePath(Application.ExeName);
+    Handle := CreateProcess(nil, PChar(Pathexe+'dist\qrcode.exe' + CommandLine), nil, nil, True, 0, nil, PChar(WorkDir), SI, PI);
+    CloseHandle(StdOutPipeWrite);
+    if Handle then
+       try
+         repeat
+           WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+           if BytesRead > 0 then
+              begin
+                Buffer[BytesRead] := #0;
+                Result := Result + Buffer;
+              end;
+
+         until not WasOK or (BytesRead = 0);
+           WaitForSingleObject(PI.hProcess, INFINITE);
+       finally
+         CloseHandle(PI.hThread);
+         CloseHandle(PI.hProcess);
+       end;
+
+  finally
+    CloseHandle(StdOutPipeRead);
+  end;
+
+end;
+
+function TFormPacketPrintFin.GetDosOutputRow(CommandLine: string; Work: string = ''): string;
+var
+  SA: TSecurityAttributes;
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  StdOutPipeRead, StdOutPipeWrite: THandle;
+  WasOK: Boolean;
+  Buffer: array[0..255] of AnsiChar;
+  BytesRead: Cardinal;
+  WorkDir: string;
+  Handle: Boolean;
+begin
+
+  Result := '';
+  with SA do
+       begin
+         nLength := SizeOf(SA);
+         bInheritHandle := True;
+         lpSecurityDescriptor := nil;
+       end;
+  CreatePipe(StdOutPipeRead, StdOutPipeWrite, @SA, 0);
+  try
+    with SI do
+         begin
+           FillChar(SI, SizeOf(SI), 0);
+           cb := SizeOf(SI);
+           dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+           wShowWindow := SW_HIDE;
+           hStdInput := GetStdHandle(STD_INPUT_HANDLE);
+           hStdOutput := StdOutPipeWrite;
+           hStdError := StdOutPipeWrite;
+         end;
+    WorkDir := ExtractFilePath(Application.ExeName);
+    Handle := CreateProcess(nil, PChar(Pathexe+'dist\qrrow.exe' + CommandLine), nil, nil, True, 0, nil, PChar(WorkDir), SI, PI);
+    CloseHandle(StdOutPipeWrite);
+    if Handle then
+       try
+         repeat
+           WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+           if BytesRead > 0 then
+              begin
+                Buffer[BytesRead] := #0;
+                Result := Result + Buffer;
+              end;
+
+         until not WasOK or (BytesRead = 0);
+           WaitForSingleObject(PI.hProcess, INFINITE);
+       finally
+         CloseHandle(PI.hThread);
+         CloseHandle(PI.hProcess);
+       end;
+
+  finally
+    CloseHandle(StdOutPipeRead);
+  end;
+
+end;
+
+
+
+end.

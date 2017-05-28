@@ -106,8 +106,8 @@
             <Form>FormMain</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="PacketPrint.pas">
-            <Form>FormPacket</Form>
+        <DCCReference Include="PacketPrintFin.pas">
+            <Form>FormPacketPrintFin</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

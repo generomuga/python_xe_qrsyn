@@ -27,12 +27,12 @@ implementation
 
 {$R *.dfm}
 
-uses DelphiZXingQRCodeTestAppMainForm, PacketPrint;
+uses DelphiZXingQRCodeTestAppMainForm, PacketPrintFin;
 
 procedure TFormMain.BucketPrint1Click(Sender: TObject);
 begin
-  FormPacket := TFormPacket.Create(Application);
-  FormPacket.Show;
+  FormPacketPrintFin := TFormPacketPrintFin.Create(Application);
+  FormPacketPrintFin.Show;
 end;
 
 procedure TFormMain.QRSyngenta1Click(Sender: TObject);

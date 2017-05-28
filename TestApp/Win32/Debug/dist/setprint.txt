@@ -1,2 +1,1 @@
-E:\Sample pics\Input - Copy.csv,1,samplebarcode.pdf
-C:\Users\GRomuga\Downloads\Syngeta\Syngeta\Import\Input.csv,nganga.pdf
+E:\Projects\QRSyngenta - New\TestApp\Win32\Debug\SPIRIT Exported Files\Gene.csv,1

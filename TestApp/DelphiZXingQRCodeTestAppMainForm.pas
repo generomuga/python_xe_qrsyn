@@ -45,8 +45,8 @@ type
     Panel1: TPanel;
     LabelMATID: TLabel;
     PaintBox1: TPaintBox;
-    LabelMCNBID: TLabel;
-    LabelMVRMK: TLabel;
+    LabelAltid: TLabel;
+    LabelDisclaimer: TLabel;
     LabelFPTID: TLabel;
     LabelADMNC: TLabel;
     LabelLOTID: TLabel;
@@ -70,8 +70,8 @@ type
     Label5: TLabel;
     ButtonImportMcnbid: TButton;
     Label9: TLabel;
-    OpenDialogMcnbid: TOpenDialog;
-    LabelMcnbidSource: TLabel;
+    OpenDialogAU: TOpenDialog;
+    LabelAUSource: TLabel;
     Label11: TLabel;
     LabelNumRec: TLabel;
     GroupBox5: TGroupBox;
@@ -88,6 +88,8 @@ type
     CheckBoxAll: TCheckBox;
     EditFileAll: TEdit;
     Button8: TButton;
+    LabelTreatment: TLabel;
+    LabelUUID: TLabel;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
@@ -132,11 +134,15 @@ type
     procedure Search(colname:String;value:String);
     procedure PrintSticker;
     procedure UpdatePrinted;
+    procedure UpdatePrintedAll;
     procedure ImportCsv(filename:String);
     procedure Split(const Delimeter:Char;Input:String;const Strings:TStringList);
-    procedure AppendDb(id,crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled:String);
+    //procedure AppendDb(id,crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled:String);
+    //procedure AppendDb(id,crpcd,matid,highname,abbrc,cgene,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled:String);
+    procedure AppendDb(id,crpcd,matid,highname,abbrc,cgene,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled:String);
     procedure ClearDB;
-    procedure AppendRow(id,crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled:String);
+    //procedure AppendRow(id,crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled:String);
+    procedure AppendRow(id,crpcd,matid,highname,abbrc,cgene,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled:String);
     procedure ExportDataCsv(filename:String);
     procedure OpenDb;
     procedure UpdateNo;
@@ -145,6 +151,9 @@ type
     procedure SaveSetPrint;
     function GetDosOutput(CommandLine: string; Work: string = ''): string;
     procedure PrintExport;
+    procedure PrintAllQRSyn;
+    procedure SaveLastImport;
+    procedure SaveSetPrintOne;
 
 
   end;
@@ -154,13 +163,11 @@ type
       procedure Execute;override;
   End;
 
-
-
 var
   FormQRSyngenta: TFormQRSyngenta;
   //for qrcode
-  lotid,mcnbid,pathexe : String;
-
+  //lotid,mcnbid,pathexe : String;
+  lotid,pathexe : String;
 
 implementation
 
@@ -181,14 +188,15 @@ begin
   LabelGENCD.Caption := '';
   LabelADMNC.Caption := '';
   LabelFPTID.Caption := '';
-  LabelMCNBID.Caption := '';
-  LabelMVRMK.Caption := '';
+  LabelAltid.Caption := '';
+  LabelDisclaimer.Caption := '';
   LabelCGENE.Caption := '';
   LabelCrpcd.Caption := '';
   LabelHighname.Caption := '';
   LabelAbbrc.Caption := '';
+  LabelTreatment.Caption := '';
 
-  LabelMcnbidSource.Caption := '';
+  LabelAUSource.Caption := '';
   Label7.Caption := '';
   LabelNumrec.Caption := '';
 
@@ -218,7 +226,6 @@ end;
 
 procedure TFormQRSyngenta.Button2Click(Sender: TObject);
 begin
-
     if CheckBoxAll.Checked = True then
        begin
           with MainThread.Create do
@@ -226,7 +233,7 @@ begin
        end
     else
       begin
-          if RadioPrintLotid.Checked = True then
+          (*if RadioPrintLotid.Checked = True then
              begin
                  if dbGrid1.Fields[8].AsString <> 'null' then
                     begin
@@ -288,6 +295,10 @@ begin
                     end;
 
              end;
+             *)
+             SaveSetPrintOne;
+             PrintAll;
+             UpdatePrinted;
       end;
 
 end;
@@ -296,7 +307,13 @@ procedure MainThread.Execute;
 begin
    FormQRSyngenta.Button2.Caption := 'Printing...';
    FormQRSyngenta.PrintExport;
+   //if FormQRSyngenta.CheckBoxAll.Checked = True then
+    //
+   //else
+
+   FormQRSyngenta.SaveSetPrint;
    FormQRSyngenta.PrintAll;
+   FormQRSyngenta.UpdatePrintedAll;
    FormQRSyngenta.Button2.Caption := 'Print';
 end;
 
@@ -308,6 +325,20 @@ var
 begin
 
   query := 'UPDATE tbl_input SET LABELLED=''Yes'' WHERE id='+dbGrid1.Fields[0].AsString+'';
+
+  FormData.AbsQueryUpdate.SQL.Clear;
+  FormData.AbsQueryUpdate.SQL.Add(query);
+  FormData.AbsQueryUpdate.ExecSQL;
+  FormData.AbsTable.Refresh;
+
+end;
+
+procedure TFormQRSyngenta.UpdatePrintedAll;
+var
+  query : String;
+begin
+
+  query := 'UPDATE tbl_input SET LABELLED=''Yes''';
 
   FormData.AbsQueryUpdate.SQL.Clear;
   FormData.AbsQueryUpdate.SQL.Add(query);
@@ -337,7 +368,7 @@ var
   query : String;
 begin
 
-  query := 'delete from tbl_input WHERE MCNBID='''+dbGrid1.Fields[11].AsString+'''';
+  query := 'delete from tbl_input WHERE ALTID='''+dbGrid1.Fields[11].AsString+'''';
 
   FormData.AbsQueryUpdate.SQL.Clear;
   FormData.AbsQueryUpdate.SQL.Add(query);
@@ -507,38 +538,42 @@ end;
 procedure TFormQRSyngenta.Button5Click(Sender: TObject);
 var
   idnum : Integer;
-  handread,crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled : String;
-  ListMcnbidSource : TStringList;
+  handread,crpcd,matid,highname,abbrc,cgene,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled : String;
+  ListAUSource : TStringList;
 begin
 
-  ListMcnbidSource := TStringList.Create;
-  ListMcnbidSource.LoadFromFile(LabelMcnbidSource.Caption);
+  ListAUSource := TStringList.Create;
+  ListAUSource.LoadFromFile(LabelAUSource.Caption);
 
 
-  if ListMcnbidSource.Count <> 0 then
+  if ListAUSource.Count <> 0 then
      begin
-          idnum := 0;
+          //idnum := 0;
+          idnum := dbGrid1.DataSource.DataSet.RecordCount + 1;
           crpcd := dbGrid1.Fields[1].AsString;
           matid := dbGrid1.Fields[2].AsString;
           highname := dbGrid1.Fields[3].AsString;
           abbrc := dbGrid1.Fields[4].AsString;
           cgene := dbGrid1.Fields[5].AsString;
           admnc := dbGrid1.Fields[6].AsString;
-          polid := dbGrid1.Fields[7].AsString;
-          lotid := dbGrid1.Fields[8].AsString;
-          gencd := dbGrid1.Fields[9].AsString;
-          fptid := dbGrid1.Fields[10].AsString;
-          mcnbid := ListMcnbidSource[0];
-          mvrmk := dbGrid1.Fields[12].AsString;
-          mltst := dbGrid1.Fields[13].AsString;
-          mstsl := dbGrid1.Fields[14].AsString;
+          lotid := dbGrid1.Fields[7].AsString;
+          gencd := dbGrid1.Fields[8].AsString;
+          fptid := dbGrid1.Fields[9].AsString;
+          //uuid := dbGrid1.Fields[10].AsString;
+          uuid := GetColumnValue(',','2',ListAUSource[0]);
+          //altid := dbGrid1.Fields[11].AsString;
+          altid := GetColumnValue(',','1',ListAUSource[0]);
+          //mcnbid := ListAUSource[0];
+          mltst := dbGrid1.Fields[12].AsString;
+          treatment := dbGrid1.Fields[13].AsString;
+          disclaimer := dbGrid1.Fields[14].AsString;
           labelled := dbGrid1.Fields[15].AsString;
 
-          AppendRow(inttostr(idnum),crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,'No');
+          AppendRow(inttostr(idnum),crpcd,matid,highname,abbrc,cgene,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,'No');
 
-          ListMcnBidSource.Delete(0);
-          ListMcnBidSource.SaveToFile(LabelMcnBidSource.Caption);
-          LabelNumRec.Caption := inttostr(ListMcnBidSource.Count);
+          ListAUSource.Delete(0);
+          ListAUSource.SaveToFile(LabelAUSource.Caption);
+          LabelNumRec.Caption := inttostr(ListAUSource.Count);
      end
   else
     begin
@@ -595,29 +630,32 @@ var
 begin
 
   ListExport := TStringList.Create;
-  ListExport.Add('CRPCD,MATID,HIGNAME,ABBRC,CGENES,ADMNC,POLID,LOTID,GENCD,FPTID,MCNBID,MVRMK,MLTST,MSTSL,Labelled?');
+  //ListExport.Add('CRPCD,MATID,HIGNAME,ABBRC,CGENES,ADMNC,POLID,LOTID,GENCD,FPTID,MCNBID,MVRMK,MLTST,MSTSL,Labelled?');
+  ListExport.Add('CRPCD,MATID,HIGNAME,ABBRC,CGENES,ADMNC,LOTID,GENCD,FPTID,UUID,ALTID,MLTST,TREATMENT,DISCLAIMER,Labelled?');
+
   ListExport.SaveToFile(PathExe+'SPIRIT Exported Files\'+EditExport.Text+'.csv');
   PathExe := ExtractFilePath(Application.ExeName);
   ExportdataCsv(PathExe+'SPIRIT Exported Files\'+EditExport.Text+'.csv');
-
   Application.MessageBox('Successfully exported!','Database',  MB_OK);
 
   //Printall;
-
 
 end;
 
 procedure TFormQRSyngenta.ButtonImportMcnbidClick(Sender: TObject);
 var
-  ListMcnbidSource : Tstringlist;
+  //ListMcnbidSource : Tstringlist;
+  ListAUSource : Tstringlist;
 begin
-
-  if OpenDialogMcnBid.Execute then
+  //OpenDialogMcnBid.Execute
+  if OpenDialogAU.Execute then
      begin
-        ListMcnbidSource := TStringList.Create;
-        LabelMcnbidSource.Caption := OpenDialogMcnbid.FileName;
-        ListMcnbidSource.LoadFromFile(LabelMcnbidSource.Caption);
-        LabelNumrec.Caption := inttostr(ListMcnbidSource.Count);
+        ListAUSource := TStringList.Create;
+        //LabelMcnbidSource.Caption := OpenDialogMcnbid.FileName;
+        LabelAUSource.Caption := OpenDialogAU.FileName;
+
+        ListAUSource.LoadFromFile(LabelAUSource.Caption);
+        LabelNumrec.Caption := inttostr(ListAUSource.Count);
      end;
 end;
 
@@ -752,9 +790,9 @@ begin
   QRCode := TDelphiZXingQRCode.Create;
   try
 
-
     if RadioPrintLotid.Checked = True then
-        QRCode.Data := LabelLotid.Caption
+        //QRCode.Data := LabelLotid.Caption
+        QRCode.Data := LabelMatid.Caption
     else if RadioPrintMatid.Checked = True then
         QRCode.Data := LabelMatid.Caption;
 
@@ -788,7 +826,7 @@ begin
   QRCode := TDelphiZXingQRCode.Create;
   try
 
-    QRCode.Data := LabelMcnBid.Caption;
+    QRCode.Data := LabelUUID.Caption;
     QRCode.Encoding := TQRCodeEncoding(cmbEncoding.ItemIndex);
     QRCode.QuietZone := StrToIntDef(edtQuietZone.Text, 4);
     QRCodeBitmap.SetSize(QRCode.Rows, QRCode.Columns);
@@ -860,13 +898,14 @@ begin
       begin
          ImportCsv(OpenDialog.FileName);
          LabelFname.Caption := OpenDialog.FileName;
+         SaveLastImport;
       end;
 end;
 
 procedure TFormQRSyngenta.ImportCsv(filename:String);
 var
    InputFile : TextFile;
-   handread,crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled : String;
+   handread,crpcd,matid,highname,abbrc,cgene,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled : String;
    ListElements : TStringList;
    ctr : integer;
 begin
@@ -880,7 +919,6 @@ begin
 
    while not eof(InputFile) do
       begin
-
           Readln(InputFile,handread);
           handread := StringReplace(handread,' ','',[rfReplaceAll]);
 
@@ -892,14 +930,14 @@ begin
           abbrc := Trim(ListElements[3]);
           cgene := Trim(ListElements[4]);
           admnc := Trim(ListElements[5]);
-          polid := Trim(ListElements[6]);
-          lotid := Trim(ListElements[7]);
-          gencd := Trim(ListElements[8]);
-          fptid := Trim(ListElements[9]);
-          mcnbid := Trim(ListElements[10]);
-          mvrmk := Trim(ListElements[11]);
-          mltst := Trim(ListElements[12]);
-          mstsl := Trim(ListElements[13]);
+          lotid := Trim(ListElements[6]);
+          gencd := Trim(ListElements[7]);
+          fptid := Trim(ListElements[8]);
+          uuid := Trim(ListElements[9]);
+          altid := Trim(ListElements[10]);
+          mltst := Trim(ListElements[11]);
+          treatment := Trim(ListElements[12]);
+          disclaimer := Trim(ListElements[13]);
           labelled := Trim(ListElements[14]);
 
           if crpcd <> '' then
@@ -932,11 +970,6 @@ begin
           else
             admnc := 'null';
 
-          if polid <> '' then
-            polid := polid
-          else
-            polid := 'null';
-
           if lotid <> '' then
             lotid := lotid
           else
@@ -952,25 +985,30 @@ begin
           else
             fptid := 'null';
 
-          if mcnbid <> '' then
-            mcnbid := mcnbid
+          if uuid <> '' then
+            uuid := uuid
           else
-            mcnbid := 'null';
+            uuid := 'null';
 
-          if mvrmk <> '' then
-            mvrmk := mvrmk
+          if altid <> '' then
+            altid := altid
           else
-            mvrmk := 'null';
+            altid := 'null';
 
           if mltst <> '' then
             mltst := mltst
           else
             mltst := 'null';
 
-          if mstsl <> '' then
-            mstsl := mstsl
+          if treatment <> '' then
+            treatment := treatment
           else
-            mstsl := 'null';
+            treatment := 'null';
+
+          if disclaimer <> '' then
+            disclaimer := disclaimer
+          else
+            disclaimer := 'null';
 
           if labelled <> '' then
             labelled := labelled
@@ -978,33 +1016,28 @@ begin
             labelled := 'null';
 
            if ctr <> 0 then
-              AppendDb(inttostr(ctr),crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled);
+              AppendDb(inttostr(ctr),crpcd,matid,highname,abbrc,cgene,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled);
 
            ctr := ctr + 1;
       end;
 
    CloseFile(InputFile);
 
-
-
 end;
 
-procedure TFormQRSyngenta.AppendDb(id,crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled:String);
+procedure TFormQRSyngenta.AppendDb(id,crpcd,matid,highname,abbrc,cgene,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled:String);
 var
   query : String;
 begin
 
-  query := 'Insert into tbl_input (id,crpcd,matid,highname,abbrc,cgenes,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled) '+
-            'values ('+id+','''+crpcd+''','''+matid+''','''+highname+''','''+abbrc+''','''+cgene+''','''+admnc+''','''+polid+''','''+lotid+''','''+gencd+''','''+fptid+''','''+mcnbid+''','''+mvrmk+''','''+mltst+''','''+mstsl+''','''+labelled+''')';
+  query := 'Insert into tbl_input(id,crpcd,matid,highname,abbrc,cgenes,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled) '+
+            'values ('+id+','''+crpcd+''','''+matid+''','''+highname+''','''+abbrc+''','''+cgene+''','''+admnc+''','''+lotid+''','''+gencd+''','''+fptid+''','''+uuid+''','''+altid+''','''+mltst+''','''+treatment+''','''+disclaimer+''','''+labelled+''')';
 
   FormData.AbsQuery.SQL.Clear;
   FormData.AbsQuery.SQL.Add(query);
   FormData.AbsQuery.ExecSQL;
   FormData.AbsTable.Refresh;
-
-
 end;
-
 
 procedure TFormQRSyngenta.CheckBoxViewClick(Sender: TObject);
  var
@@ -1051,9 +1084,10 @@ begin
 
   if RadioPrintLotid.Checked = True then
      begin
-       if dbGrid1.Fields[8].AsString <> 'null' then
+       //checks lotid if missing
+       if dbGrid1.Fields[7].AsString <> 'null' then
           begin
-            LabelLotid.Caption := dbGrid1.Fields[8].AsString;
+            LabelLotid.Caption := dbGrid1.Fields[7].AsString;
             LabelMatid.Caption := dbGrid1.Fields[2].AsString;
             LabelMatid2.Caption := dbGrid1.Fields[2].AsString;
           end
@@ -1084,7 +1118,7 @@ begin
        else
           LabelLotid.Caption := '';
 
-       if dbGrid1.Fields[8].AsString <> 'null' then
+       if dbGrid1.Fields[7].AsString <> 'null' then
           begin
             LabelMatid.Caption := dbGrid1.Fields[2].AsString;
             LabelMatid2.Caption := dbGrid1.Fields[2].AsString;
@@ -1111,8 +1145,8 @@ begin
           LabelAbbrc.Caption := '';
      end;
 
-  if dbGrid1.Fields[9].AsString <> 'null' then
-     LabelGencd.Caption := dbGrid1.Fields[9].AsString
+  if dbGrid1.Fields[8].AsString <> 'null' then
+     LabelGencd.Caption := dbGrid1.Fields[8].AsString
   else
      LabelGencd.Caption := '';
 
@@ -1126,28 +1160,37 @@ begin
   else
      LabelAdmnc.Caption := '';
 
-  if dbGrid1.Fields[10].AsString <> 'null' then
-     LabelFptid.Caption := dbGrid1.Fields[10].AsString
+  if dbGrid1.Fields[9].AsString <> 'null' then
+     LabelFptid.Caption := dbGrid1.Fields[9].AsString
   else
      LabelFptid.Caption := '';
 
   if dbGrid1.Fields[11].AsString <> 'null' then
-     LabelMcnbid.Caption := dbGrid1.Fields[11].AsString
+     LabelAltid.Caption := dbGrid1.Fields[11].AsString
   else
-     LabelMcnbid.Caption := '';
+     LabelAltid.Caption := '';
 
-  if dbGrid1.Fields[13].AsString <> 'null' then
-     LabelMvrmk.Caption := dbGrid1.Fields[13].AsString
+  if dbGrid1.Fields[14].AsString <> 'null' then
+     LabelDisclaimer.Caption := dbGrid1.Fields[14].AsString
   else
-     LabelMvrmk.Caption := '';
+     LabelDisclaimer.Caption := '';
 
   if dbGrid1.Fields[1].AsString <> 'null' then
      LabelCrpcd.Caption := dbGrid1.Fields[1].AsString
   else
      LabelCrpcd.Caption := '';
 
+  if dbGrid1.Fields[13].AsString <> 'null' then
+     LabelTreatment.Caption := dbGrid1.Fields[13].AsString
+  else
+     LabelTreatment.Caption := '';
 
-  ListExport.Add('CRPCD,MATID,HIGNAME,ABBRC,CGENES,ADMNC,POLID,LOTID,GENCD,FPTID,MCNBID,MVRMK,MLTST,MSTSL,Labelled?');
+  if dbGrid1.Fields[10].AsString <> 'null' then
+     LabelUUID.Caption := dbGrid1.Fields[10].AsString
+  else
+     LabelUUID.Caption := '';
+
+  ListExport.Add('CRPCD,MATID,HIGNAME,ABBRC,CGENES,ADMNC,LOTID,GENCD,FPTID,UUID,ALTID,MLTST,TREATMENT,DISCLAIMER,Labelled?');
   ListExport.Add(dbGrid1.Fields[1].AsString+','+dbGrid1.Fields[2].AsString+','+dbGrid1.Fields[3].AsString+','+
   dbGrid1.Fields[4].AsString+','+dbGrid1.Fields[5].AsString+','+dbGrid1.Fields[6].AsString+','+dbGrid1.Fields[7].AsString+','+
   dbGrid1.Fields[8].AsString+','+dbGrid1.Fields[9].AsString+','+dbGrid1.Fields[10].AsString+','+dbGrid1.Fields[11].AsString+','+
@@ -1170,7 +1213,6 @@ procedure TFormQRSyngenta.EditSearchChange(Sender: TObject);
 var
   colname : String;
 begin
-
 
     if RadioFptid.Checked = True then
        colname := 'fptid'
@@ -1200,21 +1242,19 @@ begin
 
 end;
 
-procedure TFormQRSyngenta.AppendRow(id,crpcd,matid,highname,abbrc,cgene,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled:String);
+procedure TFormQRSyngenta.AppendRow(id,crpcd,matid,highname,abbrc,cgene,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled:String);
 var
   query : String;
 begin
 
-  query := 'Insert into tbl_input (id,crpcd,matid,highname,abbrc,cgenes,admnc,polid,lotid,gencd,fptid,mcnbid,mvrmk,mltst,mstsl,labelled) '+
-            'values ('+id+','''+crpcd+''','''+matid+''','''+highname+''','''+abbrc+''','''+cgene+''','''+admnc+''','''+polid+''','''+'null'+''','''+gencd+''','''+fptid+''','''+mcnbid+''','''+mvrmk+''','''+mltst+''','''+mstsl+''','''+labelled+''')';
+  query := 'Insert into tbl_input (id,crpcd,matid,highname,abbrc,cgenes,admnc,lotid,gencd,fptid,uuid,altid,mltst,treatment,disclaimer,labelled) '+
+            'values ('+id+','''+crpcd+''','''+matid+''','''+highname+''','''+abbrc+''','''+cgene+''','''+admnc+''','''+lotid+''','''+gencd+''','''+fptid+''','''+uuid+''','''+altid+''','''+mltst+''','''+treatment+''','''+disclaimer+''','''+labelled+''')';
 
   FormData.AbsQuery.SQL.Clear;
   FormData.AbsQuery.SQL.Add(query);
   FormData.AbsQuery.ExecSQL;
   FormData.AbsTable.Refresh;
-
 end;
-
 
 procedure TFormQRSyngenta.ExportDataCsv(filename:String);
 var
@@ -1226,6 +1266,8 @@ begin
   AssignFile(TextOutCsv,filename);
   Append(TextOutCsv);
 
+    DbGrid1.DataSource.DataSet.First;
+    DbGrid1.SelectedIndex := 0;
     for row := 0 to DbGrid1.DataSource.DataSet.RecordCount-1 do
       begin
           for col := 1 to DbGrid1.Columns.Count-1 do
@@ -1236,11 +1278,15 @@ begin
               Writeln(TextOutcsv,handread);
               handread := '';
 
+
            DBGrid1.DataSource.DataSet.Next;
       end;
 
   CloseFile(TextOutCsv);
 end;
+
+
+
 
 procedure TFormQRSyngenta.OpenDb;
 var
@@ -1259,10 +1305,10 @@ var
 begin
   ListExport := TStringList.Create;
   ListExport := TStringList.Create;
-  ListExport.Add('CRPCD,MATID,HIGNAME,ABBRC,CGENES,ADMNC,POLID,LOTID,GENCD,FPTID,MCNBID,MVRMK,MLTST,MSTSL,Labelled?');
-  ListExport.SaveToFile(PathExe+'temp\tmp_all.csv');
+  ListExport.Add('CRPCD,MATID,HIGNAME,ABBRC,CGENES,ADMNC,LOTID,GENCD,FPTID,UUID,ALTID,MLTST,TREATMENT,DISCLAIMER,Labelled?');
+  ListExport.SaveToFile(PathExe+'temp\tmp_all_all.csv');
   PathExe := ExtractFilePath(Application.ExeName);
-  ExportdataCsv(PathExe+'temp\tmp_all.csv');
+  ExportdataCsv(PathExe+'temp\tmp_all_all.csv');
 end;
 
 
@@ -1274,7 +1320,7 @@ begin
   Label7.Visible := True;
   pathexe := ExtractFilePath(Application.ExeName);
 
-  SaveSetPrint;
+  //SaveSetPrint;
   Label7.Caption := 'Creating pdf file...';
   Label7.Caption := GetDosOutput('');
   Label7.Caption := pathexe+'Output\Syngenta_Packet_Print.pdf'+'Done!';
@@ -1282,6 +1328,36 @@ begin
    Application.MessageBox('Done ','Print',
                                     MB_OK)
 end;
+
+procedure TFormQRSyngenta.PrintAllQRSyn;
+var
+  filename : String;
+  ListSet : TStringList;
+  ListLast : TStringList;
+begin
+  filename := pathexe+'setprint.txt';
+  ListLast := TStringList.Create;
+  ListLast.LoadFromFile(pathexe+'temp\last.dat');
+
+  if (ListLast[0] <> '') and fileexists(ListLast[0]) then
+     begin
+        if DbGrid1.datasource.DataSet.RecordCount <> 0 then
+           begin
+              ListSet := TStringList.Create;
+              ListSet.Add('null');
+              //ListSet.Add(pathexe+'temp\tmp_all.csv'+','+EditFileAll.Text+'.pdf');
+              ListSet.Add(ListLast[0]+','+EditFileAll.Text+'.pdf');
+              ListSet.SaveToFile(filename);
+              Label7.Caption := GetDosOutput('')
+           end;
+     end
+  else
+    begin
+          Application.MessageBox('Please clear the database and import the new input file!','Print',
+                                    MB_OK);
+    end;
+end;
+
 
 procedure TFormQRSyngenta.SaveSetPrint;
 var
@@ -1294,10 +1370,34 @@ begin
      begin
         ListSet := TStringList.Create;
         ListSet.Add('null');
-        ListSet.Add(pathexe+'temp\tmp_all.csv'+','+EditFileAll.Text+'.pdf');
+        if RadioPrintAbbrc.Checked = True then
+          ListSet.Add(pathexe+'temp\tmp_all_all.csv'+','+EditFileAll.Text+'.pdf'+','+'0')
+        else
+          ListSet.Add(pathexe+'temp\tmp_all_all.csv'+','+EditFileAll.Text+'.pdf'+','+'1');
         ListSet.SaveToFile(filename);
      end;
 end;
+
+procedure TFormQRSyngenta.SaveSetPrintOne;
+var
+  filename : String;
+  ListSet : TStringList;
+begin
+  filename := pathexe+'setprint.txt';
+
+  if DbGrid1.datasource.DataSet.RecordCount <> 0 then
+     begin
+        ListSet := TStringList.Create;
+        ListSet.Add('null');
+        //ListSet.Add(pathexe+'temp\tmp_all.csv'+','+dbGrid1.Fields[11].AsString+'.pdf');
+        if RadioPrintAbbrc.Checked = True then
+          ListSet.Add(pathexe+'temp\tmp_all.csv'+','+dbGrid1.Fields[11].AsString+'.pdf'+','+'0')
+        else
+          ListSet.Add(pathexe+'temp\tmp_all.csv'+','+dbGrid1.Fields[11].AsString+'.pdf'+','+'1');
+        ListSet.SaveToFile(filename);
+     end;
+end;
+
 
 
 function TFormQRSyngenta.GetDosOutput(CommandLine: string; Work: string = ''): string;
@@ -1358,6 +1458,24 @@ begin
 
 end;
 
+procedure TFormQRSyngenta.SaveLastImport;
+var
+  ListLastImport : TStringList;
+begin
+  ListLastImport := TstringList.Create;
+  if OpenDialog.FileName <> '' then
+    begin
+      ListLastImport.Add(OpenDialog.FileName);
+      ListLastImport.SaveToFile(pathexe+'temp\'+'last.dat');
+    end
+  else
+    begin
+      Application.MessageBox('Please clear the database and import the new input file!','Print',
+                                    MB_OK);
+    end;
+
+
+end;
 
 
 
